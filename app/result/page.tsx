@@ -160,7 +160,7 @@ export default function ResultPage() {
             >
               <h3 className="text-lg font-bold mb-4 text-center">分享方式</h3>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                {navigator.share && (
+                {typeof navigator.share === 'function' && (
                   <button
                     onClick={handleSystemShare}
                     className="flex flex-col items-center p-4 hover:bg-gray-50 rounded-lg transition-colors"
