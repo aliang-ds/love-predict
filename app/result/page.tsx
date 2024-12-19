@@ -58,7 +58,7 @@ export default function ResultPage() {
 
     try {
       await navigator.share(shareData);
-    } catch (error) {
+    } catch (_error) {
       console.log('系统分享失败');
     }
   };
@@ -69,7 +69,7 @@ export default function ResultPage() {
       await navigator.clipboard.writeText(text);
       alert('结果已复制到剪贴板！');
       setShowCustomShare(false);
-    } catch (error) {
+    } catch (_error)  {
       alert('复制失败，请手动复制');
     }
   };
