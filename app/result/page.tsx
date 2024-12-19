@@ -7,8 +7,16 @@ export default function ResultPage() {
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
   const [showCustomShare, setShowCustomShare] = useState(false);
+  const [canSystemShare, setCanSystemShare] = useState(false);
 
   useEffect(() => {
+    // 检查系统分享功能是否可用
+    setCanSystemShare(
+      typeof window !== 'undefined' && 
+      typeof navigator !== 'undefined' && 
+      'share' in navigator
+    );
+
     // 模拟计算得分
     const finalScore = Math.floor(Math.random() * 31) + 70; // 70-100之间的随机数
     
@@ -58,7 +66,7 @@ export default function ResultPage() {
 
     try {
       await navigator.share(shareData);
-    } catch  {
+    } catch {
       console.log('系统分享失败');
     }
   };
@@ -69,7 +77,7 @@ export default function ResultPage() {
       await navigator.clipboard.writeText(text);
       alert('结果已复制到剪贴板！');
       setShowCustomShare(false);
-    } catch  {
+    } catch {
       alert('复制失败，请手动复制');
     }
   };
@@ -160,7 +168,7 @@ export default function ResultPage() {
             >
               <h3 className="text-lg font-bold mb-4 text-center">分享方式</h3>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                {typeof navigator.share === 'function' && (
+                {canSystemShare && (
                   <button
                     onClick={handleSystemShare}
                     className="flex flex-col items-center p-4 hover:bg-gray-50 rounded-lg transition-colors"
