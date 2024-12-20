@@ -11,13 +11,21 @@
 
 @keyframes float-up {
   from {
-    transform: translateY(100vh);
+    transform: translateY(100vh) translateX(0);
     opacity: 1;
   }
+  50% {
+    transform: translateY(50vh) translateX(calc(sin(var(--random-offset, 0deg)) * 50px));
+  }
   to {
-    transform: translateY(-20vh);
+    transform: translateY(-20vh) translateX(0);
     opacity: 0;
   }
+}
+
+.animate-float-up {
+  animation: float-up linear forwards;
+  will-change: transform;
 }
 
 .animate-float-up {
