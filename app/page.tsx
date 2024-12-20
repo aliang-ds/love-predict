@@ -9,15 +9,16 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
+      const randomX = Math.random() * 40 - 20; // -20 到 20 之间的随机值
       const newHeart = {
         id: nextHeartId,
         style: {
           position: 'absolute',
           left: `${Math.random() * 90 + 5}%`,
-          bottom: '-20px',
+          bottom: '0',
           fontSize: `${Math.random() * 1.5 + 0.5}rem`,
-          opacity: Math.random() * 0.5 + 0.5,
-          color: '#db2777'
+          '--random-x': `${randomX}px`,
+          '--initial-opacity': '0.7'
         }
       };
 
@@ -37,13 +38,16 @@ export default function Home() {
   }, [nextHeartId]);
 
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-b from-pink-50 to-white overflow-hidden">
+    <div className="relative w-full min-h-screen">
+      {/* 背景层 */}
+      <div className="fixed inset-0 bg-gradient-to-b from-pink-50 to-white" />
+
       {/* 心形动画容器 */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {hearts.map(heart => (
           <div
             key={heart.id}
-            className="animate-float-up"
+            className="animate-float-up absolute"
             style={heart.style}
           >
             ❤️
@@ -52,7 +56,7 @@ export default function Home() {
       </div>
 
       {/* 内容容器 */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen">
+      <div className="relative z-10 min-h-screen flex items-center justify-center">
         <div className="w-full max-w-[600px] mx-auto px-6">
           <h1 className="text-5xl font-bold text-pink-600 mb-4 text-center">
             AI情侣测试
