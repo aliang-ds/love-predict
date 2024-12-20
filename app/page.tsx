@@ -1,13 +1,35 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
+  const [hearts, setHearts] = useState<Array<{ id: number; style: any }>>([]);
+  const [nextHeartId, setNextHeartId] = useState(0);
 
   useEffect(() => {
-    // ... 保持现有的 useEffect 动画代码不变 ...
-  }, []);
+    const interval = setInterval(() => {
+      // 创建新的心形
+      const newHeart = {
+        id: nextHeartId,
+        style: {
+          left: `${Math.random() * 100}%`,
+          animationDuration: `${Math.random() * 2 + 2}s`,
+          fontSize: `${Math.random() * 1.5 + 0.5}rem`
+        }
+      };
+
+      setHearts(prev => [...prev, newHeart]);
+      setNextHeartId(prev => prev + 1);
+
+      // 3秒后移除这个心形
+      setTimeout(() => {
+        setHearts(prev => prev.filter(heart => heart.id !== newHeart.id));
+      }, 3000);
+    }, 300);
+
+    return () => clearInterval(interval);
+  }, [nextHeartId]);
 
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
@@ -15,8 +37,18 @@ export default function Home() {
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-pink-50 to-white" />
         <div className="absolute inset-0 bg-white/60 backdrop-blur-sm" />
-        <div className="hearts-container absolute inset-0" style={{ pointerEvents: 'none' }} />
       </div>
+
+      {/* 漂浮的心形 */}
+      {hearts.map(heart => (
+        <div
+          key={heart.id}
+          className="absolute text-pink-500 animate-float-up pointer-events-none"
+          style={heart.style}
+        >
+          ❤️
+        </div>
+      ))}
 
       {/* 内容层 */}
       <div style={{
