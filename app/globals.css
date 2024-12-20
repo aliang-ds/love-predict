@@ -9,7 +9,6 @@
   }
   50% {
     transform: translateY(50vh) translateX(var(--random-x, 20px));
-    opacity: var(--initial-opacity, 0.7);
   }
   100% {
     transform: translateY(0) translateX(0);
@@ -19,28 +18,20 @@
 
 .animate-float-up {
   animation: float-up 3s linear forwards;
-  will-change: transform, opacity;
-}
-
-/* 确保动画容器不影响交互 */
-.hearts-container {
+  --initial-opacity: 0.7;
+  --random-x: 20px;
   pointer-events: none;
-  z-index: 0;
 }
 
-/* 确保内容层在动画上方 */
+.hearts-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .content-layer {
   position: relative;
-  z-index: 1;
-}
-
-/* 优化移动端显示 */
-@media (max-width: 640px) {
-  .text-5xl {
-    font-size: 2.5rem;
-  }
-  
-  .text-xl {
-    font-size: 1.1rem;
-  }
+  z-index: 10;
 }

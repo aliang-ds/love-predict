@@ -9,16 +9,15 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const randomX = Math.random() * 40 - 20; // -20 到 20 之间的随机值
       const newHeart = {
         id: nextHeartId,
         style: {
           position: 'absolute',
           left: `${Math.random() * 90 + 5}%`,
-          bottom: '0',
+          animationDuration: `${Math.random() * 2 + 2}s`,
           fontSize: `${Math.random() * 1.5 + 0.5}rem`,
-          '--random-x': `${randomX}px`,
-          '--initial-opacity': '0.7'
+          opacity: Math.random() * 0.5 + 0.5,
+          zIndex: '0'
         }
       };
 
@@ -38,16 +37,13 @@ export default function Home() {
   }, [nextHeartId]);
 
   return (
-    <div className="relative w-full min-h-screen">
-      {/* 背景层 */}
-      <div className="fixed inset-0 bg-gradient-to-b from-pink-50 to-white" />
-
+    <div className="relative w-full min-h-screen bg-gradient-to-b from-pink-50 to-white">
       {/* 心形动画容器 */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="hearts-container">
         {hearts.map(heart => (
           <div
             key={heart.id}
-            className="animate-float-up absolute"
+            className="animate-float-up"
             style={heart.style}
           >
             ❤️
@@ -56,40 +52,100 @@ export default function Home() {
       </div>
 
       {/* 内容容器 */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-[600px] mx-auto px-6">
-          <h1 className="text-5xl font-bold text-pink-600 mb-4 text-center">
+      <div className="content-layer flex items-center justify-center min-h-screen">
+        <div style={{
+          width: '100%',
+          maxWidth: '600px',
+          padding: '0 20px',
+          textAlign: 'center'
+        }}>
+          <h1 style={{
+            fontSize: '3rem',
+            fontWeight: 'bold',
+            color: '#db2777',
+            marginBottom: '1rem'
+          }}>
             AI情侣测试
           </h1>
 
-          <p className="text-xl text-gray-600 mb-12 text-center">
+          <p style={{
+            fontSize: '1.125rem',
+            color: '#4b5563',
+            marginBottom: '3rem'
+          }}>
             通过AI深度分析，测试你们的缘分指数
           </p>
 
-          <div className="flex justify-center gap-6 mb-12 flex-wrap">
-            <div className="flex-1 min-w-[240px] max-w-[280px] p-6 bg-white/90 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold text-pink-600 mb-2">✨ 准确率高</h3>
-              <p className="text-gray-600">AI深度分析</p>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '1.5rem',
+            marginBottom: '3rem',
+            flexWrap: 'wrap',
+            padding: '0 10px'
+          }}>
+            {/* 特性卡片 */}
+            <div style={{
+              padding: '1.5rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              borderRadius: '0.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              flex: '1 1 200px',
+              maxWidth: '250px'
+            }}>
+              <h3 style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: '#db2777',
+                marginBottom: '0.5rem'
+              }}>✨ 准确率高</h3>
+              <p style={{color: '#4b5563'}}>AI深度分析</p>
             </div>
 
-            <div className="flex-1 min-w-[240px] max-w-[280px] p-6 bg-white/90 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold text-pink-600 mb-2">🔒 隐私保护</h3>
-              <p className="text-gray-600">数据安全加密</p>
+            <div style={{
+              padding: '1.5rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              borderRadius: '0.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              flex: '1 1 200px',
+              maxWidth: '250px'
+            }}>
+              <h3 style={{
+                fontSize: '1.25rem',
+                fontWeight: 'bold',
+                color: '#db2777',
+                marginBottom: '0.5rem'
+              }}>🔒 隐私保护</h3>
+              <p style={{color: '#4b5563'}}>数据安全加密</p>
             </div>
           </div>
 
-          <div className="text-center">
-            <button 
-              onClick={() => router.push('/test')}
-              className="bg-pink-600 hover:bg-pink-700 text-white px-12 py-4 rounded-full text-xl font-bold transition-colors duration-200 mb-8 shadow-lg hover:shadow-xl"
-            >
-              开始测试你们的缘分
-            </button>
+          <button 
+            onClick={() => router.push('/test')}
+            style={{
+              backgroundColor: '#db2777',
+              color: 'white',
+              padding: '1rem 3rem',
+              borderRadius: '9999px',
+              fontSize: '1.125rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              marginBottom: '2rem',
+              border: 'none'
+            }}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = '#be185d'}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = '#db2777'}
+          >
+            开始测试你们的缘分
+          </button>
 
-            <p className="text-gray-400 text-sm">
-              已有超过10000对情侣完成测试 ❤️
-            </p>
-          </div>
+          <p style={{
+            fontSize: '0.875rem',
+            color: '#9ca3af'
+          }}>
+            已有超过10000对情侣完成测试 ❤️
+          </p>
         </div>
       </div>
     </div>
