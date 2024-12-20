@@ -9,12 +9,11 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // 创建新的心形，使用更均匀的随机分布
       const newHeart = {
         id: nextHeartId,
         style: {
           position: 'absolute',
-          left: `${Math.random() * 90 + 5}%`, // 5% 到 95% 之间
+          left: `${Math.random() * 90 + 5}%`,
           animationDuration: `${Math.random() * 2 + 2}s`,
           fontSize: `${Math.random() * 1.5 + 0.5}rem`,
           opacity: Math.random() * 0.5 + 0.5,
@@ -35,10 +34,6 @@ export default function Home() {
     }, 200);
 
     return () => clearInterval(interval);
-  }, [nextHeartId]);
-
-  // ... 其余代码保持不变 ...
-    }, [nextHeartId]);
   }, [nextHeartId]);
 
   return (
