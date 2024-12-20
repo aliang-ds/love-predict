@@ -35,7 +35,36 @@ export default function Home() {
       }, 3000);
     }, 200); // 稍微减慢生成速度
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); useEffect(() => {
+      const interval = setInterval(() => {
+        // 创建新的心形，使用更均匀的随机分布
+        const newHeart = {
+          id: nextHeartId,
+          style: {
+            left: `${Math.random() * 90 + 5}%`, // 5% 到 95% 之间，避免太靠边
+            animationDuration: `${Math.random() * 2 + 2}s`,
+            fontSize: `${Math.random() * 1.5 + 0.5}rem`,
+            opacity: Math.random() * 0.5 + 0.5, // 添加随机透明度
+            zIndex: '0' // 确保在内容之下
+          }
+        };
+  
+        setHearts(prev => {
+          // 限制同时存在的心形数量
+          const maxHearts = 15;
+          const newHearts = [...prev, newHeart];
+          return newHearts.slice(-maxHearts);
+        });
+        setNextHeartId(prev => prev + 1);
+  
+        // 3秒后移除这个心形
+        setTimeout(() => {
+          setHearts(prev => prev.filter(heart => heart.id !== newHeart.id));
+        }, 3000);
+      }, 200); // 稍微减慢生成速度
+  
+      return () => clearInterval(interval);
+    }, [nextHeartId]);
   }, [nextHeartId]);
 
   return (
