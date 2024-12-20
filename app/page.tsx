@@ -20,7 +20,7 @@ export default function Home() {
       heart.style.setProperty('--float-time', `${floatTime}s`);
       heart.style.setProperty('--heart-color', colors[Math.floor(Math.random() * colors.length)]);
       
-      const container = document.querySelector('.floating-hearts');
+      const container = document.querySelector('.hearts-container');
       if (container) {
         container.appendChild(heart);
         setTimeout(() => heart.remove(), floatTime * 1000);
@@ -36,7 +36,7 @@ export default function Home() {
     createHeartWithRandomInterval();
 
     return () => {
-      const container = document.querySelector('.floating-hearts');
+      const container = document.querySelector('.hearts-container');
       if (container) {
         container.innerHTML = '';
       }
@@ -44,19 +44,19 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-pink-50 to-white relative overflow-hidden">
-      {/* 背景遮罩 */}
-      <div className="absolute inset-0 bg-white/70 backdrop-blur-md z-[1]" />
+    <div className="main-container">
+      {/* 背景渐变 */}
+      <div className="absolute inset-0 bg-gradient-to-b from-pink-50 to-white" />
       
-      {/* 浮动心形 */}
-      <div className="floating-hearts fixed inset-0" style={{ 
-        pointerEvents: 'none',
-        zIndex: 0
-      }} />
+      {/* 心形容器 */}
+      <div className="hearts-container absolute inset-0" style={{ pointerEvents: 'none' }} />
+      
+      {/* 内容遮罩 */}
+      <div className="absolute inset-0 bg-white/60 backdrop-blur-sm" />
 
-      {/* 主内容容器 */}
-      <div className="fixed inset-0 z-[2] flex items-center justify-center">
-        <div className="w-full max-w-2xl mx-auto px-4">
+      {/* 主要内容 */}
+      <div className="relative h-full flex items-center justify-center px-4">
+        <div className="w-full max-w-2xl mx-auto">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-pink-600 mb-8">
               AI恋爱契合度测试
@@ -97,6 +97,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
