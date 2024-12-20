@@ -1,67 +1,105 @@
 'use client';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-export default function Test() {
+export default function Result() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    name1: '',
-    name2: '',
-    timeTogether: '',
-    meetMethod: '',
-    commonInterests: ''
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [score, setScore] = useState(0);
+  const [analysis, setAnalysis] = useState('');
+  const [testData, setTestData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // 处理输入变化
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  useEffect(() => {
+    try {
+      // 从localStorage获取测试数据
+      const data = localStorage.getItem('loveTest');
+      console.log('从localStorage获取的原始数据:', data);
 
-  // 处理表单提交
-  const handleNext = () => {
-    console.log('当前步骤:', step); // 调试日志
-    console.log('当前表单数据:', formData); // 调试日志
-
-    if (step === 1) {
-      if (!formData.name1.trim() || !formData.name2.trim()) {
-        alert('请输入双方的名字');
+      if (!data) {
+        console.log('没有找到测试数据，重定向到测试页面');
+        router.push('/test');
         return;
       }
-      setStep(2);
-    } else if (step === 2) {
-      if (!formData.timeTogether || !formData.meetMethod || !formData.commonInterests) {
-        alert('请回答所有问题');
+
+      const parsedData = JSON.parse(data);
+      console.log('解析后的测试数据:', parsedData);
+
+      // 验证数据完整性
+      if (!parsedData.name1 || !parsedData.name2 || 
+          !parsedData.timeTogether || !parsedData.commonInterests) {
+        console.error('数据不完整:', parsedData);
+        setError('测试数据不完整，请重新测试');
         return;
       }
-      setStep(3);
-    } else {
-      // 最终提交
-      try {
-        console.log('保存数据到localStorage:', formData); // 调试日志
-        localStorage.setItem('loveTest', JSON.stringify(formData));
-        
-        // 验证数据是否保存成功
-        const savedData = localStorage.getItem('loveTest');
-        console.log('验证保存的数据:', savedData); // 调试日志
-        
-        if (!savedData) {
-          throw new Error('数据保存失败');
+
+      setTestData(parsedData);
+      calculateResult(parsedData);
+    } catch (error) {
+      console.error('数据处理错误:', error);
+      setError('数据处理出错，请重新测试');
+    }
+  }, []);
+
+  const calculateResult = (data: any) => {
+    try {
+      setIsLoading(true);
+      console.log('开始计算结果，使用数据:', data);
+      
+      setTimeout(() => {
+        try {
+          // 数据类型验证
+          const timeTogetherNum = parseInt(data.timeTogether);
+          const commonInterestsNum = parseInt(data.commonInterests);
+
+          if (isNaN(timeTogetherNum) || isNaN(commonInterestsNum)) {
+            throw new Error('无效的数值数据');
+          }
+
+          let baseScore = 60;
+          const timeScore = timeTogetherNum * 5;
+          const interestScore = commonInterestsNum * 8;
+          
+          console.log('计算过程:', {
+            baseScore,
+            timeScore,
+            interestScore
+          });
+
+          let finalScore = Math.min(100, baseScore + timeScore + interestScore);
+          
+          let analysisText = '';
+          if (finalScore >= 90) {
+            analysisText = '你们是天生一对！有很高的契合度。';
+          } else if (finalScore >= 80) {
+            analysisText = '你们很般配，继续保持！';
+          } else if (finalScore >= 70) {
+            analysisText = '你们有不错的基础，还可以更进一步。';
+          } else if (finalScore >= 60) {
+            analysisText = '你们需要更多了解对方，有提升空间。';
+          } else {
+            analysisText = '建议多花时间互相了解，培养共同兴趣。';
+          }
+
+          console.log('计算结果:', { finalScore, analysisText });
+
+          setScore(finalScore);
+          setAnalysis(analysisText);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('计算过程错误:', error);
+          setError('计算结果时出错，请重新测试');
+          setIsLoading(false);
         }
-
-        // 确保数据保存成功后再跳转
-        router.push('/result');
-      } catch (error) {
-        console.error('提交失败:', error);
-        alert('提交失败，请重试');
-      }
+      }, 2000);
+    } catch (error) {
+      console.error('calculateResult函数错误:', error);
+      setError('处理过程出错，请重新测试');
+      setIsLoading(false);
     }
   };
 
+  // ... 其余UI代码保持不变 ...
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
       {/* 背景层 */}
@@ -81,230 +119,122 @@ export default function Test() {
         padding: '0 20px',
         textAlign: 'center'
       }}>
-        {/* 步骤提示 */}
-        <p style={{
-          fontSize: '1rem',
-          color: '#6b7280',
-          marginBottom: '1.5rem',
+        <h1 style={{
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          color: '#db2777',
+          marginBottom: '2rem',
           textAlign: 'center'
         }}>
-          第 {step} / 3 步
-        </p>
+          你们的缘分测试结果
+        </h1>
 
-        {step === 1 && (
+        {error ? (
+          <div style={{
+            color: '#ef4444',
+            marginBottom: '2rem',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        ) : isLoading ? (
           <>
-            <h2 style={{
-              fontSize: '1.875rem',
-              fontWeight: 'bold',
-              color: '#db2777',
-              marginBottom: '2rem',
-              textAlign: 'center'
-            }}>
-              基本信息
-            </h2>
-
             <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.5rem',
-              marginBottom: '2rem'
-            }}>
-              <input
-                type="text"
-                name="name1"
-                value={formData.name1}
-                onChange={handleInputChange}
-                placeholder="你的名字"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '0.5rem',
-                  border: '1px solid #e5e7eb',
-                  fontSize: '1rem',
-                  textAlign: 'center',
-                  backgroundColor: 'white'
-                }}
-              />
-              <input
-                type="text"
-                name="name2"
-                value={formData.name2}
-                onChange={handleInputChange}
-                placeholder="对方的名字"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '0.5rem',
-                  border: '1px solid #e5e7eb',
-                  fontSize: '1rem',
-                  textAlign: 'center',
-                  backgroundColor: 'white'
-                }}
-              />
-            </div>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <h2 style={{
-              fontSize: '1.875rem',
+              fontSize: '3rem',
               fontWeight: 'bold',
               color: '#db2777',
-              marginBottom: '2rem',
+              marginBottom: '1.5rem',
               textAlign: 'center'
             }}>
-              了解你们的关系
-            </h2>
-
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.5rem',
-              marginBottom: '2rem'
-            }}>
-              <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  color: '#4b5563',
-                  textAlign: 'center'
-                }}>
-                  你们在一起多久了？
-                </label>
-                <select
-                  name="timeTogether"
-                  value={formData.timeTogether}
-                  onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '0.5rem',
-                    border: '1px solid #e5e7eb',
-                    fontSize: '1rem',
-                    backgroundColor: 'white',
-                    textAlign: 'center'
-                  }}
-                >
-                  <option value="">请选择</option>
-                  <option value="0">还没在一起</option>
-                  <option value="1">不到3个月</option>
-                  <option value="2">3-6个月</option>
-                  <option value="3">6个月到1年</option>
-                  <option value="4">1-3年</option>
-                  <option value="5">3年以上</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  color: '#4b5563',
-                  textAlign: 'center'
-                }}>
-                  你们是如何认识的？
-                </label>
-                <select
-                  name="meetMethod"
-                  value={formData.meetMethod}
-                  onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '0.5rem',
-                    border: '1px solid #e5e7eb',
-                    fontSize: '1rem',
-                    backgroundColor: 'white',
-                    textAlign: 'center'
-                  }}
-                >
-                  <option value="">请选择</option>
-                  <option value="1">校园认识</option>
-                  <option value="2">职场相遇</option>
-                  <option value="3">朋友介绍</option>
-                  <option value="4">网络认识</option>
-                  <option value="5">偶然相遇</option>
-                  <option value="6">其他方式</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  color: '#4b5563',
-                  textAlign: 'center'
-                }}>
-                  你们有多少共同兴趣爱好？
-                </label>
-                <select
-                  name="commonInterests"
-                  value={formData.commonInterests}
-                  onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '0.5rem',
-                    border: '1px solid #e5e7eb',
-                    fontSize: '1rem',
-                    backgroundColor: 'white',
-                    textAlign: 'center'
-                  }}
-                >
-                  <option value="">请选择</option>
-                  <option value="1">几乎没有共同爱好</option>
-                  <option value="2">1-2个共同爱好</option>
-                  <option value="3">3-4个共同爱好</option>
-                  <option value="4">5个以上共同爱好</option>
-                  <option value="5">兴趣爱好高度一致</option>
-                </select>
-              </div>
+              ...
             </div>
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            <h2 style={{
-              fontSize: '1.875rem',
-              fontWeight: 'bold',
-              color: '#db2777',
-              marginBottom: '2rem',
-              textAlign: 'center'
-            }}>
-              确认提交
-            </h2>
             <p style={{
-              fontSize: '1.125rem',
-              color: '#4b5563',
-              marginBottom: '2rem',
+              fontSize: '1.25rem',
+              color: '#6b7280',
+              marginBottom: '3rem',
               textAlign: 'center'
             }}>
-              请确认信息无误，点击提交开始分析
+              正在分析...
+            </p>
+          </>
+        ) : (
+          <>
+            <div style={{
+              fontSize: '3rem',
+              fontWeight: 'bold',
+              color: '#db2777',
+              marginBottom: '1.5rem',
+              textAlign: 'center'
+            }}>
+              {score}分
+            </div>
+            <p style={{
+              fontSize: '1.25rem',
+              color: '#6b7280',
+              marginBottom: '3rem',
+              textAlign: 'center'
+            }}>
+              {analysis}
             </p>
           </>
         )}
 
-        {/* 按钮 */}
-        <button
-          onClick={handleNext}
-          style={{
-            backgroundColor: '#db2777',
-            color: 'white',
-            padding: '0.75rem 2rem',
-            borderRadius: '9999px',
-            fontSize: '1.125rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            display: 'inline-block'
-          }}
-          onMouseOver={e => e.currentTarget.style.backgroundColor = '#be185d'}
-          onMouseOut={e => e.currentTarget.style.backgroundColor = '#db2777'}
-        >
-          {step === 3 ? '提交' : '下一步'}
-        </button>
+        {/* 按钮组 */}
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
+          justifyContent: 'center',
+          flexWrap: 'wrap'
+        }}>
+          <button
+            onClick={() => {
+              localStorage.removeItem('loveTest'); // 清除数据
+              router.push('/test');
+            }}
+            style={{
+              backgroundColor: '#db2777',
+              color: 'white',
+              padding: '0.75rem 2rem',
+              borderRadius: '9999px',
+              fontSize: '1.125rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = '#be185d'}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = '#db2777'}
+          >
+            重新测试
+          </button>
+          
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'AI恋爱契合度测试结果',
+                  text: `我和TA的契合度测试结果是${score}分！${analysis}`,
+                  url: window.location.href
+                }).catch((error) => console.log('分享失败:', error));
+              } else {
+                alert('您的浏览器不支持分享功能');
+              }
+            }}
+            style={{
+              backgroundColor: '#db2777',
+              color: 'white',
+              padding: '0.75rem 2rem',
+              borderRadius: '9999px',
+              fontSize: '1.125rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = '#be185d'}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = '#db2777'}
+          >
+            分享结果
+          </button>
+        </div>
       </div>
     </div>
   );
