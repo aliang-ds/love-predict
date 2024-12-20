@@ -38,6 +38,7 @@ export default function Home() {
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-b from-pink-50 to-white">
+      {/* 心形动画容器 */}
       <div className="hearts-container">
         {hearts.map(heart => (
           <div
@@ -50,12 +51,9 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="content-layer">
+      {/* 内容容器 */}
+      <div className="content-layer flex items-center justify-center min-h-screen">
         <div style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '600px',
           padding: '0 20px',
@@ -82,13 +80,18 @@ export default function Home() {
             display: 'flex',
             justifyContent: 'center',
             gap: '1.5rem',
-            marginBottom: '3rem'
+            marginBottom: '3rem',
+            flexWrap: 'wrap',
+            padding: '0 10px'
           }}>
+            {/* 特性卡片 */}
             <div style={{
               padding: '1.5rem',
               backgroundColor: 'rgba(255, 255, 255, 0.9)',
               borderRadius: '0.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              flex: '1 1 200px',
+              maxWidth: '250px'
             }}>
               <h3 style={{
                 fontSize: '1.25rem',
@@ -103,7 +106,9 @@ export default function Home() {
               padding: '1.5rem',
               backgroundColor: 'rgba(255, 255, 255, 0.9)',
               borderRadius: '0.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              flex: '1 1 200px',
+              maxWidth: '250px'
             }}>
               <h3 style={{
                 fontSize: '1.25rem',
@@ -126,7 +131,8 @@ export default function Home() {
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.2s',
-              marginBottom: '2rem'
+              marginBottom: '2rem',
+              border: 'none'
             }}
             onMouseOver={e => e.currentTarget.style.backgroundColor = '#be185d'}
             onMouseOut={e => e.currentTarget.style.backgroundColor = '#db2777'}
