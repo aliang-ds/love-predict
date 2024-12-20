@@ -2,37 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 添加心形动画样式 */
-.heart {
-  position: absolute;
-  animation: float var(--float-time) ease-in forwards;
-  opacity: 0.8;
-}
-
 @keyframes float-up {
   0% {
-    transform: translateY(0) translateX(0);
+    transform: translateY(100vh);
     opacity: var(--initial-opacity, 0.7);
   }
   50% {
-    transform: translateY(-50vh) translateX(calc(var(--random-offset, 20) * 1px));
+    transform: translateY(50vh) translateX(var(--random-x, 20px));
   }
   100% {
-    transform: translateY(-100vh) translateX(0);
+    transform: translateY(0) translateX(0);
     opacity: 0;
   }
 }
 
 .animate-float-up {
-  animation: float-up linear forwards;
-  --random-offset: calc(Math.random() * 40 - 20);
-  --initial-opacity: calc(Math.random() * 0.5 + 0.5);
-}
-
-/* 确保主容器样式 */
-.main-container {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  isolation: isolate;
+  animation: float-up 3s linear forwards;
+  --initial-opacity: 0.7;
+  --random-x: 20px;
 }

@@ -15,7 +15,6 @@ export default function Home() {
         style: {
           position: 'absolute',
           left: `${Math.random() * 90 + 5}%`, // 5% 到 95% 之间
-          top: '100vh', // 从底部开始
           animationDuration: `${Math.random() * 2 + 2}s`,
           fontSize: `${Math.random() * 1.5 + 0.5}rem`,
           opacity: Math.random() * 0.5 + 0.5,
