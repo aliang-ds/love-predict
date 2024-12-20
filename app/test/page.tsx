@@ -16,6 +16,7 @@ export default function Test() {
   // 处理输入变化
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    console.log('[Test] 输入变化:', { name, value });
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -24,6 +25,9 @@ export default function Test() {
 
   // 处理下一步
   const handleNext = () => {
+    console.log('[Test] 当前步骤:', step);
+    console.log('[Test] 当前表单数据:', formData);
+
     if (step === 1) {
       if (!formData.name1.trim() || !formData.name2.trim()) {
         alert('请输入双方的名字');
@@ -37,10 +41,30 @@ export default function Test() {
       }
       setStep(3);
     } else {
-      // 处理最终提交
-      router.push('/result');
+      // 最终提交处理
+      try {
+        console.log('[Test] 准备保存数据到localStorage');
+        localStorage.setItem('loveTest', JSON.stringify(formData));
+        
+        // 验证数据是否保存成功
+        const savedData = localStorage.getItem('loveTest');
+        console.log('[Test] 验证保存的数据:', savedData);
+        
+        if (!savedData) {
+          throw new Error('数据保存失败');
+        }
+
+        // 确保数据保存成功后再跳转
+        console.log('[Test] 数据保存成功，准备跳转到结果页面');
+        router.push('/result');
+      } catch (error) {
+        console.error('[Test] 提交失败:', error);
+        alert('提交失败，请重试');
+      }
     }
   };
+
+  // ... 其余 UI 代码保持不变 ...
 
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
@@ -253,9 +277,19 @@ export default function Test() {
               marginBottom: '2rem',
               textAlign: 'center'
             }}>
-              最后一步
+              确认提交
             </h2>
-            {/* 添加第三步的内容 */}
+            <div style={{
+              fontSize: '1.125rem',
+              color: '#4b5563',
+              marginBottom: '2rem',
+              textAlign: 'center'
+            }}>
+              <p style={{ marginBottom: '1rem' }}>
+                {formData.name1} 和 {formData.name2}
+              </p>
+              <p>请确认信息无误，点击提交开始分析</p>
+            </div>
           </>
         )}
 

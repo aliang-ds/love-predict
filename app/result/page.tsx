@@ -11,46 +11,58 @@ export default function Result() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      // 从localStorage获取测试数据
-      const data = localStorage.getItem('loveTest');
-      console.log('从localStorage获取的原始数据:', data);
+    // 添加延迟确保 localStorage 可用
+    setTimeout(() => {
+      try {
+        // 从localStorage获取测试数据
+        const data = localStorage.getItem('loveTest');
+        console.log('[Result] 从localStorage获取的原始数据:', data);
 
-      if (!data) {
-        console.log('没有找到测试数据，重定向到测试页面');
-        router.push('/test');
-        return;
+        if (!data) {
+          console.log('[Result] 没有找到测试数据，准备重定向...');
+          setError('未找到测试数据');
+          setTimeout(() => {
+            router.push('/test');
+          }, 1000);
+          return;
+        }
+
+        const parsedData = JSON.parse(data);
+        console.log('[Result] 解析后的测试数据:', parsedData);
+
+        // 验证数据完整性
+        if (!parsedData.name1 || !parsedData.name2 || 
+            !parsedData.timeTogether || !parsedData.commonInterests) {
+          console.error('[Result] 数据不完整:', parsedData);
+          setError('测试数据不完整，请重新测试');
+          return;
+        }
+
+        setTestData(parsedData);
+        calculateResult(parsedData);
+      } catch (error) {
+        console.error('[Result] 数据处理错误:', error);
+        setError('数据处理出错，请重新测试');
       }
-
-      const parsedData = JSON.parse(data);
-      console.log('解析后的测试数据:', parsedData);
-
-      // 验证数据完整性
-      if (!parsedData.name1 || !parsedData.name2 || 
-          !parsedData.timeTogether || !parsedData.commonInterests) {
-        console.error('数据不完整:', parsedData);
-        setError('测试数据不完整，请重新测试');
-        return;
-      }
-
-      setTestData(parsedData);
-      calculateResult(parsedData);
-    } catch (error) {
-      console.error('数据处理错误:', error);
-      setError('数据处理出错，请重新测试');
-    }
-  }, []);
+    }, 100); // 添加小延迟
+  }, [router]); // 添加 router 到依赖数组
 
   const calculateResult = (data: any) => {
+    console.log('[Result] 开始计算结果');
     try {
       setIsLoading(true);
-      console.log('开始计算结果，使用数据:', data);
+      console.log('[Result] 使用数据计算:', data);
       
       setTimeout(() => {
         try {
           // 数据类型验证
           const timeTogetherNum = parseInt(data.timeTogether);
           const commonInterestsNum = parseInt(data.commonInterests);
+
+          console.log('[Result] 解析的数值:', {
+            timeTogetherNum,
+            commonInterestsNum
+          });
 
           if (isNaN(timeTogetherNum) || isNaN(commonInterestsNum)) {
             throw new Error('无效的数值数据');
@@ -60,7 +72,7 @@ export default function Result() {
           const timeScore = timeTogetherNum * 5;
           const interestScore = commonInterestsNum * 8;
           
-          console.log('计算过程:', {
+          console.log('[Result] 计算过程:', {
             baseScore,
             timeScore,
             interestScore
@@ -81,25 +93,27 @@ export default function Result() {
             analysisText = '建议多花时间互相了解，培养共同兴趣。';
           }
 
-          console.log('计算结果:', { finalScore, analysisText });
+          console.log('[Result] 最终结果:', {
+            score: finalScore,
+            analysis: analysisText
+          });
 
           setScore(finalScore);
           setAnalysis(analysisText);
           setIsLoading(false);
         } catch (error) {
-          console.error('计算过程错误:', error);
+          console.error('[Result] 计算过程错误:', error);
           setError('计算结果时出错，请重新测试');
           setIsLoading(false);
         }
       }, 2000);
     } catch (error) {
-      console.error('calculateResult函数错误:', error);
+      console.error('[Result] calculateResult函数错误:', error);
       setError('处理过程出错，请重新测试');
       setIsLoading(false);
     }
   };
 
-  // ... 其余UI代码保持不变 ...
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
       {/* 背景层 */}
