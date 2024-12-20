@@ -20,4 +20,19 @@
   animation: float-up 3s linear forwards;
   --initial-opacity: 0.7;
   --random-x: 20px;
+  pointer-events: none; /* 添加这行 */
+}
+
+/* 添加这些新样式 */
+.hearts-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.content-layer {
+  position: relative;
+  z-index: 10;
 }

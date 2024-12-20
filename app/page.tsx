@@ -57,7 +57,7 @@ export default function Home() {
 
       {/* 内容层 */}
       <div style={{
-        position: 'absolute',
+        position: 'relative',
         left: '50%',
         top: '50%',
         transform: 'translate(-50%, -50%)',
@@ -65,6 +65,7 @@ export default function Home() {
         maxWidth: '600px',
         padding: '0 20px',
         textAlign: 'center'
+        zIndex: '10' 
       }}>
         {/* 标题 */}
         <h1 style={{
